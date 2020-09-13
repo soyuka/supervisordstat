@@ -4,9 +4,22 @@ Run [`pidstat`](http://sebastien.godard.pagesperso-orange.fr/man_pidstat.html) o
 
 ## Usage
 
-The process will log to a file named `monit-{process-name}.txt`. To transform the output to csv and json, one may use csvtk:
+The process will log to a file named `monit-{process-name}.txt`. 
+Use the following configuration in supervisord to start monitoring:
 
+```ini
+[eventlistener:mylistener]
+command=./supervisordstat
+events=PROCESS_STATE
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes = 0
+redirect_stderr=true
 ```
+
+To transform the output to csv and json, one may use csvtk:
+
+```bash
 #!/bin/bash
 
 # Usage to-csv.sh monit-logger.txt
@@ -25,7 +38,7 @@ rm $temp $tab
 
 ## Dockerfile
 
-```
+```dockerfile
 FROM golang:1.11-alpine AS build-env
 RUN apk add --update git && rm -rf /var/cache/apk/*
 ADD supervisordstat /src
